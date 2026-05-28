@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sentence Builder Quiz</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+  
+  body { 
+    margin: 0; 
+    padding: 0; 
+    background-color: transparent; 
+    font-family: 'Montserrat', sans-serif; 
+    color: white; 
+    overflow-x: hidden; 
+  }
+  
+  .wrapper { 
+    padding: 10px; 
+    width: 100%; 
+    max-width: 900px; 
+    margin: 0 auto; 
+    box-sizing: border-box; 
+  }
+  
+  .action-card { 
+    background: #000; 
+    border-left: 6px solid #D30000; 
+    border-radius: 12px; 
+    padding: 30px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7); 
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box; 
+    transition: all 0.4s ease;
+  }
+  
+  .section-header { 
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+  }
+
+  .header-title-container { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    border-bottom: 2.5px solid #D30000; 
+    padding-bottom: 8px; 
+    width: 100%; 
+    justify-content: space-between; 
+    transition: all 0.4s ease;
+  }
+  
+  .logo-bracket { 
+    width: 42px; 
+    height: 42px; 
+    background: #000; 
+    border-left: 3.5px solid #D30000; 
+    border-radius: 5px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    padding-left: 4px; 
+    box-sizing: border-box; 
+  }
+  
+  .logo-bracket img { 
+    width: 34px; 
+    height: 34px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+  }
+  
+  .header-left-group { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+  }
+  
+  .header-left-group h2 { 
+    color: #ffffff; 
+    font-size: 1rem; 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px; 
+    margin: 0; 
+  }
+
+  .counter-text {
+    color: #888;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .progress-container { 
+    width: 100%; 
+    background: #222; 
+    height: 4px; 
+    border-radius: 2px; 
+    margin-bottom: 20px; 
+    overflow: hidden; 
+  }
+  
+  .progress-bar { height: 100%; background: #D30000; width: 0%; transition: width 0.4s ease; }
+
+  .exercise-block { 
+    background: #111; 
+    padding: 20px; 
+    border-radius: 10px; 
+    border: 1px solid #222; 
+  }
+  
+  .spanish-hint { 
+    font-size: 1.2rem; 
+    color: #ffffff; 
+    margin-bottom: 15px; 
+    font-weight: 700; 
+    text-align: center; 
+    line-height: 1.3;
+    letter-spacing: 0.5px;
+  }
+
+  .drop-zone {
+    min-height: 65px; 
+    width: 100%; 
+    border: 1.5px dashed #444; 
+    border-radius: 8px;
+    margin-bottom: 15px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    flex-wrap: wrap; 
+    gap: 10px; 
+    padding: 12px; 
+    background: #050505; 
+    box-sizing: border-box;
+  }
+
+  .drop-zone.is-correct { 
+    border: 2px solid #00FF00 !important; 
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2); 
+    background: #001f09 !important;
+  }
+
+  .word-bank { 
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    align-items: center;
+    gap: 10px; 
+    margin-bottom: 15px; 
+    width: 100%; 
+    min-height: 50px; 
+    padding: 5px;
+    box-sizing: border-box;
+  }
+
+  .tile {
+    background: #000; 
+    border: 1.5px solid #444; 
+    border-bottom: 3px solid #222;
+    padding: 10px 16px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-weight: 700; 
+    color: #fff; 
+    font-size: 0.95rem;
+    user-select: none; 
+    transition: all 0.2s; 
+    text-align: center;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    touch-action: none;
+  }
+  
+  .tile:hover { border-color: #555; }
+  .tile.dragging { opacity: 0.4; transform: scale(0.9); }
+  
+  .drop-zone .tile { border-color: #D30000; border-bottom: 3px solid #900; cursor: grab; }
+  .is-correct .tile { border-color: #00FF00 !important; border-bottom: 3px solid #00CC00 !important; color: #00FF00 !important; cursor: default; }
+
+  .button-group { display: flex; gap: 10px; width: 100%; margin-top: 5px; }
+  
+  .btn {
+    padding: 14px; 
+    border-radius: 8px; 
+    font-weight: 700; 
+    cursor: pointer;
+    text-transform: uppercase; 
+    border: none; 
+    font-family: 'Montserrat', sans-serif; 
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+  }
+  
+  .btn-check { background: #D30000; color: white; flex: 2; border-bottom: 3px solid #900; }
+  .btn-next { background: #00FF00; color: #000; flex: 2; display: none; border-bottom: 3px solid #00CC00; box-shadow: 0 0 10px rgba(0, 255, 0, 0.2); }
+  .btn-reset { background: #222; color: #888; flex: 1; border: 1px solid #333; border-bottom: 3px solid #151515; }
+  .btn-perfect { background: #00FF00 !important; color: #000 !important; border-bottom: 3px solid #00CC00 !important; }
+
+  .feedback { 
+    margin-top: 5px; 
+    margin-bottom: 15px; 
+    padding: 10px; 
+    min-height: 40px; 
+    display: none; 
+    align-items: center; 
+    justify-content: center; 
+    font-weight: 700; 
+    font-size: 0.9rem; 
+    line-height: 1.4; 
+    text-transform: uppercase;
+    text-align: center;
+    border-radius: 8px;
+  }
+  
+  .correct-text { color: #00FF00; display: flex; }
+  .wrong-text { color: #ff6b6b; background: #080505; border: 1px solid #222; text-transform: none; display: flex; }
+
+  .finish-screen { padding: 15px 5px; text-align: center; animation: fadeIn 0.5s; width: 100%; }
+  
+  .finish-screen h3 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .score-circle {
+    display: inline-block; 
+    width: 90px; 
+    height: 90px; 
+    border: 4px solid #00FF00;
+    border-radius: 50%; 
+    line-height: 90px; 
+    font-size: 1.8rem; 
+    font-weight: 700;
+    margin: 20px 0; 
+    color: #00FF00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+  }
+  
+  .restart-btn { 
+    width: 100%; 
+    border-radius: 8px; 
+    font-weight: 700; 
+    cursor: pointer; 
+    text-transform: uppercase; 
+    padding: 14px; 
+    border: none; 
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+  }
+  .restart-red { background: #D30000; color: white; border-bottom: 3px solid #900; }
+  .restart-green { background: #00FF00; color: #000; border-bottom: 3px solid #00CC00; box-shadow: 0 0 15px rgba(0, 255, 0, 0.5); }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  @media (max-width: 768px) {
+    .action-card { padding: 15px; border-left-width: 4px; }
+    .logo-bracket { width: 36px; height: 36px; }
+    .logo-bracket img { width: 28px; height: 28px; }
+    .header-left-group h2 { font-size: 0.85rem; }
+    .counter-text { font-size: 0.8rem; }
+    .exercise-block { padding: 12px; border-radius: 8px; }
+    .spanish-hint { font-size: 1rem; margin-bottom: 12px; }
+    .drop-zone { min-height: 55px; padding: 8px; gap: 8px; margin-bottom: 12px; }
+    .word-bank { min-height: 40px; gap: 8px; margin-bottom: 12px; }
+    .tile { padding: 8px 12px; font-size: 0.8rem; border-radius: 6px; border-bottom-width: 2px; }
+    .feedback { font-size: 0.8rem; padding: 6px; margin-bottom: 12px; min-height: 30px; }
+    .btn { padding: 12px; font-size: 0.75rem; border-radius: 6px; border-bottom-width: 2px; }
+    .finish-screen h3 { font-size: 1.3rem; }
+    .score-circle { width: 75px; height: 75px; line-height: 75px; font-size: 1.5rem; margin: 15px 0; }
+    .restart-btn { padding: 12px; font-size: 0.75rem; border-radius: 6px; border-bottom-width: 2px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="action-card" id="quiz-ui"></div>
+</div>
+
+<script>
+  const quizData = [
+    { q: "Yo tengo que comprar equipaje.", a: ["I", "have", "to buy", "baggage"], alt: "buy", reason: "Usa 'to buy' con have to." },
+    { q: "Canadá tiene que tener nieve.", a: ["Canada", "has", "to have", "snow"], alt: "have", reason: "Usa 'to have' con has to." },
+    { q: "Jenna y yo tenemos que traer mascotas.", a: ["Jenna", "and", "I", "have", "to bring", "pets"], alt: "bring", reason: "Usa 'to bring' con have to." },
+    { q: "Él tiene que depositar dinero.", a: ["He", "has", "to deposit", "money"], alt: "deposit", reason: "Usa 'to deposit' con has to." },
+    { q: "Ella tiene que retirar efectivo.", a: ["She", "has", "to withdraw", "cash"], alt: "withdraw", reason: "Usa 'to withdraw' con has to." },
+    { q: "Yo tengo que vender boletas.", a: ["I", "have", "to sell", "tickets"], alt: "sell", reason: "Usa 'to sell' con have to." },
+    { q: "Ella tiene que ahorrar tiempo.", a: ["She", "has", "to save", "time"], alt: "save", reason: "Usa 'to save' con has to." },
+    { q: "Él tiene que preparar comida.", a: ["He", "has", "to prepare", "food"], alt: "prepare", reason: "Usa 'to prepare' con has to." },
+    { q: "Yo tengo que conseguir resultados.", a: ["I", "have", "to get", "results"], alt: "get", reason: "Usa 'to get' con have to." },
+    { q: "Tú tienes que enviar correos electrónicos.", a: ["You", "have", "to send", "emails"], alt: "send", reason: "Usa 'to send' con have to." },
+    { q: "Yo quiero comprar bolsas.", a: ["I", "want", "to buy", "bags"], alt: "buy", reason: "Usa 'to buy' con want." },
+    { q: "Canadá quiere atraer turistas.", a: ["Canada", "wants", "to attract", "tourists"], alt: "attract", reason: "Usa 'to attract' con wants." },
+    { q: "Jenna y yo queremos comprar mascotas.", a: ["Jenna", "and", "I", "want", "to buy", "pets"], alt: "buy", reason: "Usa 'to buy' con want." },
+    { q: "Él quiere transferir dinero.", a: ["He", "wants", "to transfer", "money"], alt: "transfer", reason: "Usa 'to transfer' con wants." },
+    { q: "Ella quiere pagar facturas.", a: ["She", "wants", "to pay", "bills"], alt: "pay", reason: "Usa 'to pay' con wants." },
+    { q: "Yo quiero comprar boletas.", a: ["I", "want", "to buy", "tickets"], alt: "buy", reason: "Usa 'to buy' con want." },
+    { q: "Ella quiere ahorrar tiempo.", a: ["She", "wants", "to save", "time"], alt: "save", reason: "Usa 'to save' con wants." },
+    { q: "Él quiere preparar bebidas.", a: ["He", "wants", "to prepare", "drinks"], alt: "prepare", reason: "Usa 'to prepare' con wants." },
+    { q: "Yo quiero conseguir respuestas.", a: ["I", "want", "to get", "answers"], alt: "get", reason: "Usa 'to get' con want." },
+    { q: "Tú quieres enviar cartas.", a: ["You", "want", "to send", "letters"], alt: "send", reason: "Usa 'to send' con want." }
+  ];
+
+  let currentIndex = 0, score = 0, hasErrored = false, randomizedQuiz = [];
+  const LIMIT = 10;
+
+  function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
+
+  function startQuiz() {
+    randomizedQuiz = shuffle([...quizData]).slice(0, LIMIT);
+    currentIndex = 0; score = 0;
+    renderSkeleton();
+    loadQuestion();
+  }
+
+  function renderSkeleton() {
+    document.getElementById('quiz-ui').innerHTML = `
+      <div class="section-header">
+        <div class="header-title-container">
+          <div class="header-left-group">
+            <div class="logo-bracket"><img src="https://drive.google.com/thumbnail?id=1DQWHMZf7MpnzZBa3CbqqyJGLQEK6U4lZ" alt="Kira"></div>
+            <h2>Sentence Builder</h2>
+          </div>
+          <span id="counter" class="counter-text">1/${LIMIT}</span>
+        </div>
+      </div>
+      <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+      <div class="exercise-block">
+        <div class="spanish-hint" id="hint-es"></div>
+        <div class="drop-zone" id="drop-zone"></div>
+        <div class="word-bank" id="word-bank"></div>
+        <div id="feedback" class="feedback"></div>
+        <div class="button-group">
+          <button class="btn btn-reset" onclick="loadQuestion()">Reset</button>
+          <button class="btn btn-check" id="check-btn" onclick="checkSentence()">Check</button>
+          <button class="btn btn-next" id="next-btn" onclick="nextQuestion()">SIGUIENTE PREGUNTA →</button>
+        </div>
+      </div>
+    `;
+    initDragEvents();
+  }
+
+  function loadQuestion() {
+    hasErrored = false;
+    const data = randomizedQuiz[currentIndex];
+    document.getElementById('counter').innerText = `${currentIndex + 1}/${LIMIT}`;
+    document.getElementById('progress-bar').style.width = `${((currentIndex + 1) / LIMIT) * 100}%`;
+    document.getElementById('hint-es').innerText = data.q;
+    
+    const fb = document.getElementById('feedback');
+    fb.innerText = '';
+    fb.style.display = "none";
+    
+    const dropZone = document.getElementById('drop-zone');
+    dropZone.innerHTML = '';
+    dropZone.classList.remove('is-correct');
+    
+    document.getElementById('check-btn').style.display = "block";
+    document.getElementById('next-btn').style.display = "none";
+    
+    const bank = document.getElementById('word-bank');
+    bank.innerHTML = '';
+    shuffle([...data.a, data.alt]).forEach(word => createTile(word, bank));
+  }
+
+  function createTile(word, container) {
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+    tile.innerText = word;
+    tile.draggable = true;
+    tile.onclick = () => {
+      if(document.getElementById('drop-zone').classList.contains('is-correct')) return;
+      const dropZone = document.getElementById('drop-zone');
+      const bank = document.getElementById('word-bank');
+      (tile.parentElement === bank ? dropZone : bank).appendChild(tile);
+      const fb = document.getElementById('feedback');
+      fb.innerText = '';
+      fb.style.display = "none";
+    };
+    tile.addEventListener('dragstart', () => tile.classList.add('dragging'));
+    tile.addEventListener('dragend', () => tile.classList.remove('dragging'));
+    container.appendChild(tile);
+  }
+
+  function initDragEvents() {
+    const containers = [document.getElementById('drop-zone'), document.getElementById('word-bank')];
+    containers.forEach(container => {
+      container.addEventListener('dragover', e => {
+        if(document.getElementById('drop-zone').classList.contains('is-correct')) return;
+        e.preventDefault();
+        const dragging = document.querySelector('.dragging');
+        const afterElement = getDragAfterElement(container, e.clientX);
+        if (afterElement == null) container.appendChild(dragging);
+        else container.insertBefore(dragging, afterElement);
+      });
+    });
+  }
+
+  function getDragAfterElement(container, x) {
+    const draggableElements = [...container.querySelectorAll('.tile:not(.dragging)')];
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = x - box.left - box.width / 2;
+      if (offset < 0 && offset > closest.offset) return { offset: offset, element: child };
+      else return closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  function checkSentence() {
+    const data = randomizedQuiz[currentIndex];
+    const userWords = [...document.getElementById('drop-zone').querySelectorAll('.tile')].map(t => t.innerText);
+    const feedback = document.getElementById('feedback');
+    feedback.style.display = "flex";
+    
+    if (userWords.join(' ') === data.a.join(' ')) {
+      if (!hasErrored) score++;
+      feedback.className = 'feedback correct-text';
+      feedback.innerText = "¡CORRECTO!";
+      document.getElementById('drop-zone').classList.add('is-correct');
+      document.getElementById('check-btn').style.display = "none";
+      document.getElementById('next-btn').style.display = "block";
+      document.querySelectorAll('.tile').forEach(t => t.draggable = false);
+    } else {
+      hasErrored = true;
+      feedback.className = 'feedback wrong-text';
+      feedback.innerText = userWords.length === 0 ? "Selecciona palabras" : `INCORRECTO: ${data.reason}`;
+    }
+  }
+
+  function nextQuestion() {
+    currentIndex++;
+    currentIndex < LIMIT ? loadQuestion() : finishGame();
+  }
+
+  function finishGame() {
+    const isPerfect = score === LIMIT;
+    const btnText = isPerfect ? "¡EXCELENTE TRABAJO! 🔥" : "REINTENTAR";
+    const btnClass = isPerfect ? "restart-green" : "restart-red";
+    
+    document.getElementById('quiz-ui').innerHTML = `
+      <div class="finish-screen">
+        <h3 style="color:#00FF00; margin:0 0 10px 0;">¡COMPLETADO!</h3>
+        <div class="score-circle">${score}/${LIMIT}</div>
+        <p style="font-size:0.95rem; font-weight:700; color:#aaa; margin-bottom:20px;">${isPerfect ? "¡PUNTAJE PERFECTO!" : "SIGUE PRACTICANDO."}</p>
+        <button class="restart-btn ${btnClass}" onclick="startQuiz()">${btnText}</button>
+      </div>`;
+  }
+  
+  startQuiz();
+</script>
+</body>
+</html>
